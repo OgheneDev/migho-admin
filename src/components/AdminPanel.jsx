@@ -100,7 +100,6 @@ const AdminPanel = () => {
         <p className="ml-4">{contact.name}</p>
       </div>
       <ul>
-        <li>{contact.email}</li>
         <li>{contact.product_category}</li>
         <li>{contact.product}</li>
         <li>{contact.message}</li>

@@ -10,7 +10,7 @@ const Header = () => {
         <h1 className='text-lg font-bold text-custom-orange'>Admin Dashboard</h1>
       </div>
 
-      <form className='w-fi flex bg-very-light-blue px-[20px] rounded-[15px]'>
+      <form className='w-fi flex md:bg-very-light-blue px-[20px] md:rounded-[15px]'>
         <input type="text" placeholder='Search' className='bg-transparent outline-none px-3 py-2 hidden md:block  placeholder:text-custom-orange' />
         <button><img src={search} alt="" className='w-5' /></button>
       </form>
