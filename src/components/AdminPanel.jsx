@@ -73,8 +73,8 @@ const AdminPanel = () => {
       </form>
       </div>
        
-      <form className={`${isVisible ? "block" : "hidden"} w-[300px] mt-[20px] flex bg-very-light-blue px-[20px] py-[10px] rounded-[15px] md:hidden mx-[auto]`}>
-        <input type="text" placeholder='Search' className='bg-transparent outline-none px-3 py-2 hidden md:block  placeholder:text-custom-orange' />
+      <form className={`${isVisible ? "block" : "hidden"} w-fit mt-[20px] flex bg-very-light-blue px-[20px] py-[10px] rounded-[15px] md:hidden mx-[auto]`}>
+        <input type="text" placeholder='Search' className='bg-transparent outline-none  placeholder:text-custom-orange' />
         <button><img src={search} alt="" className='w-5' /></button>
       </form>
     </header>
