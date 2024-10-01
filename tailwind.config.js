@@ -11,9 +11,9 @@ export default {
         'custom-grey': '#888181',
         'custom-ash': '#D9D9D9',
         'very-light-blue': '#EEEEEE',
-        'very-dark-grey': '#CECECE99',
-        'very-dark-ash': '#888181'
-        
+        'very-dark-grey': '#CECECE',
+        'very-dark-ash': '#888181',
+        'custom-blue': '#02113C',
       },
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],

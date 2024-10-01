@@ -1,234 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import filter from '../assets/images/filter.svg';
-import sort from '../assets/images/sort.svg';
-import add from '../assets/images/add.svg';
-import bin from '../assets/images/bin.svg';
-import delet from '../assets/images/delete.svg';
-import logo from '../assets/images/logo.svg'
-import search from '../assets/images/search.svg'
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import ProductList from './ProductList'
+import ContactList from './ContactList'
+import filter from '../assets/images/filter.svg'
+import sort from '../assets/images/sort.svg'
+import add from '../assets/images/add.svg'
 
-const AdminPanel = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [products, setProducts] = useState([]); // For default product list
-  const [filteredProducts, setFilteredProducts] = useState([]); // For search results
-  const [activeSection, setActiveSection] = useState(1);
-  const [contacts, setContacts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const [isSearching, setIsSearching] = useState(false); // To track if the user is searching
+const AdminPanel = ({activeSection, products, contacts, isDropdownVisible, toggleDropdownVisibility}) => {
 
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  }
+   const navigate = useNavigate();
 
-  // Fetch all products (default)
-  const fetchAllProducts = () => {
-    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
-
-    axios
-      .get(`https://migho-backend.onrender.com/v1/api/products`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send token in Authorization header
-        },
-      })
-      .then((response) => {
-        if (response.data && response.data.data && Array.isArray(response.data.data.results)) {
-          setProducts(response.data.data.results); // Store all products
-        } else {
-          console.error('Unexpected response format', response.data);
-        }
-      })
-      .catch((err) => console.error('Error fetching products:', err));
-  };
-
-  // Fetch filtered products based on search query
-  const fetchFilteredProducts = (query) => {
-    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
-
-    axios
-      .get(`https://migho-backend.onrender.com/v1/api/products?search=${query}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send token in Authorization header
-        },
-      })
-      .then((response) => {
-        if (response.data && response.data.data && Array.isArray(response.data.data.results)) {
-          setFilteredProducts(response.data.data.results); // Store search results
-        } else {
-          console.error('Unexpected response format', response.data);
-        }
-      })
-      .catch((err) => console.error('Error fetching filtered products:', err));
-  };
-
-  // Fetch contacts
-  useEffect(() => {
-    const token = localStorage.getItem('authToken'); // Retrieve token from localStorage
-
-    axios
-      .get('https://migho-backend.onrender.com/v1/api/quotes', {
-        headers: {
-          Authorization: `Bearer ${token}`, // Send token in Authorization header
-        },
-      })
-      .then((response) => {
-        if (response.data && response.data.data && Array.isArray(response.data.data.results)) {
-          setContacts(response.data.data.results);
-        } else {
-          console.error('Unexpected response format', response.data);
-        }
-      })
-      .catch((err) => console.error('Error fetching contacts:', err));
-  }, []);
-
-  // Handle search form submit
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery) {
-      setIsSearching(true); // Set searching state to true
-      fetchFilteredProducts(searchQuery); // Fetch filtered products
-    } else {
-      setIsSearching(false); // If search query is cleared, show default products
-    }
-  };
-
-  // Fetch all products on initial render
-  useEffect(() => {
-    fetchAllProducts(); // Fetch all products initially
-  }, []);
+   const handleDropdownClick = (category) => {
+    navigate(`/add-product/${category}`)
+   }
 
   return (
-    <div>
-      <header className=' p-5 font-sans border-very-dark-grey border-b-[1px]'>
-        <div className='flex justify-between'>
-          <div className='flex gap-2 items-center'>
-            <img src={logo} alt="" className='w-9' />
-            <h1 className='text-lg font-bold text-custom-orange'>Admin Dashboard</h1>
-          </div>
-
-          <button className='md:hidden' onClick={toggleVisibility}>
-            <img src={search} alt="" className='w-5' />
+    <div className="md:p-5 border-very-dark-grey border-l-[1px]">
+      <div className="sort bg-white md:bg-very-dark-grey flex justify-between p-6 md:py-[15px] items-center md:rounded-[25px]">
+        <p className="text-custom-orange">5 Bedroom duplex</p>
+        <div className="flex gap-3">
+          <button className="flex items-center gap-2 p-2">
+            <img src={filter} alt="Filter icon" className="w-5" />
+            Filter
           </button>
-
-          <form 
-            className=' search-form flex md:bg-very-light-blue px-[20px] md:rounded-[15px] hidden md:block' 
-            onSubmit={handleSearchSubmit}
-          >
-            <input 
-              type="text" 
-              placeholder='Search' 
-              className='bg-transparent outline-none px-3 py-2 hidden md:block  placeholder:text-custom-orange'
-              value={searchQuery} // Controlled input for search
-              onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
-            />
-            <button type="submit">
-              <img src={search} alt="" className='w-5' />
-            </button>
-          </form>
-        </div>
-
-        <form 
-          className={`${isVisible ? "block" : "hidden"} w-fit mt-[20px] flex bg-very-light-blue px-[20px] py-[10px] rounded-[15px] md:hidden mx-[auto]`}
-          onSubmit={handleSearchSubmit}
-        >
-          <input 
-            type="text" 
-            placeholder='Search' 
-            className='bg-transparent outline-none  placeholder:text-custom-orange'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button type="submit">
-            <img src={search} alt="" className='w-5' />
+          <button className="flex items-center gap-2 p-2">
+            <img src={sort} alt="Sort icon" className="w-4" />
+            Sort
           </button>
-        </form>
-      </header>
-
-      <div className='md:flex md:px-[20px] gap-[20px]'>
-        <nav className='bg-very-dark-grey p-6 flex items-center md:my-[20px] justify-between md:w-[250px] md:flex-col md:justify-start md:gap-[20px] md:px-[10px] md:rounded-[15px] md:py-[45px]'>
-          <button 
-            onClick={() => setActiveSection(1)} 
-            className={`font-bold w-fit ${activeSection === 1 ? 'bg-custom-orange text-white px-[20px] py-[5px] rounded-[15px] transition-all duration-300 ease-in-out' : 'text-custom-orange bg-transparent'}`}
-          >
-            Manage Products
+          <button onClick={toggleDropdownVisibility} className="flex items-center gap-2 text-white bg-custom-orange p-2 rounded-lg">
+            <img src={add} alt="Add icon" className="w-4" />
+            Add
           </button>
-          <button 
-            onClick={() => setActiveSection(2)} 
-            className={`font-bold w-fit ${activeSection === 2 ? 'bg-custom-orange text-white px-[20px] py-[5px] rounded-[15px] transition-all duration-300 ease-in-out' : 'text-custom-orange bg-transparent'}`}
-          >
-            View Contacts
-          </button>
-        </nav>
-
-        <div className='md:p-[20px] border-very-dark-grey border-l-[1px] flex flex-col'>
-          <div className='sort bg-white w-[100%] flex justify-between p-6 md:px-[50px] md:py-[10px] items-center md:bg-very-dark-grey md:rounded-[20px]'>
-            <p className='text-custom-orange'>5 Bedroom duplex</p>
-            <div className='flex gap-3'>
-              <button className='flex items-center gap-2 p-2'>
-                <img src={filter} alt='filter icon' className='w-5 md:w-[15px]' />
-                Filter
-              </button>
-              <button className='flex items-center gap-2 p-2'>
-                <img src={sort} alt='sort icon' className='w-4 md:w-[13px]' />
-                Sort
-              </button>
-              <button className='flex items-center gap-2 text-white bg-custom-orange p-2 justify-center rounded md:rounded-[20px] md:px-[25px]'>
-                <img src={add} alt='add icon' className='w-4 md:w-[15px]' />
-                Add
-              </button>
-            </div>
-          </div>
-
-          <div className="container">
-            {activeSection === 1 ? (
-              <div className='products flex flex-col items-start md:flex-row flex-wrap gap-[20px] pt-[30px] pb-[60px]'>
-                {(isSearching ? filteredProducts : products).map((product, index) => (
-                  <div key={index} className='product bg-very-dark-grey w-[90%] md:w-[250px] mx-auto p-[20px] rounded-[15px]'>
-                    <img src={product.image[0]} alt="" className='w-[100%] mx-auto h-[250px] rounded-[15px] mb-[20px] md:h-[180px]' />
-                    <div className='flex justify-between mb-[20px]'>
-                      <p className='text-custom-orange font-bold md:text-[14px]'>{product.name}</p>
-                      <button>
-                        <img src={bin} alt="" className='md:w-[10px]' />
-                      </button>
-                    </div>
-                    <button className='bg-custom-orange text-white px-[15px] py-[5px] rounded-[20px] text-[13px]'>
-                      View details
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className='contacts-container flex flex-wrap gap-4 justify-center py-[30px]'>
-                {contacts.map((contact, index) => (
-                  <div key={index} className='bg-very-dark-grey flex flex-col p-[20px] rounded-[15px] w-[300px]'>
-                    <div className="profile-container flex items-center mb-4">
-                      <div className="profile bg-very-dark-ash flex justify-center items-center rounded-full w-[50px] h-[50px]">
-                        {contact.name.charAt(0).toUpperCase()}
-                      </div>
-                      <p className="ml-4">{contact.name}</p>
-                    </div>
-                    <ul>
-                      <li>{contact.product_category}</li>
-                      <li>{contact.product}</li>
-                      <li>{contact.message}</li>
-                    </ul>
-
-                    <div className='flex justify-between'>
-                      <button>View details</button>
-                      <button><img src={delet} alt="" /></button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
-    </div>
-  );
-};
 
-export default AdminPanel;
+       {isDropdownVisible && (
+        <div className='dropdown bg-white p-[20px] w-fit mx-auto'>
+          <ul className='flex flex-col gap-[10px]'>
+            <li className='text-custom-grey hover:text-custom-orange cursor-pointer' onClick={() => handleDropdownClick('agriculture')}>AGRICULTURE</li>
+            <li className='text-custom-grey hover:text-custom-orange cursor-pointer' onClick={() => handleDropdownClick('transportation')}>TRANSPORTATION</li>
+            <li className='text-custom-grey hover:text-custom-orange cursor-pointer' onClick={() => handleDropdownClick('real_estate')}>REAL ESTATE</li>
+          </ul>
+        </div>
+       )}
+
+      <div className="container">
+        {activeSection === 1 ? (
+          <ProductList products={products} />
+        ) : (
+          <ContactList contacts={contacts} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default AdminPanel
+
+
+
+
 
 
 

@@ -1,8 +1,8 @@
 import React from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
-import SignUpPage from './pages/SignUpPage'
 import SignInPage from './pages/SignInPage'
 import Dashboard from './pages/Dashboard'
+import AddProductForm from './pages/AddProductForm'
 
 const App = () => {
 
@@ -11,6 +11,7 @@ const App = () => {
       <>
         <Route path='/' element={<SignInPage />} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/add-product/:category' element={<AddProductForm />} />
       </>
     )
   )
