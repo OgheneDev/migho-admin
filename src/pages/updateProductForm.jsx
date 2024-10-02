@@ -1,20 +1,47 @@
-import React, { useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import plusIcon from '../assets/images/plus-icon.svg';
 
 // Function to get the auth token from localStorage
 const getAuthToken = () => localStorage.getItem('authToken');
 
-const AddProductForm = () => {
-  const { category } = useParams();
+const UpdateProductForm = () => {
+  const { productId } = useParams();
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
+  const [productCategory, setProductCategory] = useState('');
+  const [productPrice, setProductPrice] = useState('');
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchProductData();
+  }, [productId]);
+
+  const fetchProductData = async () => {
+    try {
+      const response = await axios.get(`https://migho-backend.onrender.com/v1/api/products/${productId}`, {
+        headers: { Authorization: `Bearer ${getAuthToken()}` },
+      });
+      const product = response.data.data;
+      setProductName(product.name);
+      setProductDescription(product.description);
+      setProductCategory(product.category);
+      setProductPrice(product.price.toString());
+      // Set existing images as files with preview
+      setFiles(product.image.map((url) => ({
+        name: url.split('/').pop(),
+        preview: url,
+      })));
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      setError('Failed to fetch product data. Please try again.');
+    }
+  };
 
   // Handle file drop
   const onDrop = useCallback((acceptedFiles) => {
@@ -23,7 +50,7 @@ const AddProductForm = () => {
         preview: URL.createObjectURL(file),
       })
     );
-    setFiles(newFiles);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
   }, []);
 
   // Initialize the dropzone
@@ -41,7 +68,7 @@ const AddProductForm = () => {
     e.preventDefault();
 
     if (!productName || !productDescription || files.length === 0) {
-      setError('Please fill all fields and upload at least one image.');
+      setError('Please fill all fields and have at least one image.');
       return;
     }
 
@@ -49,39 +76,43 @@ const AddProductForm = () => {
     setError(null);
 
     try {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('image', file);
-      });
-
       const authToken = getAuthToken();
+      let imageUrls = files.filter(file => file.preview.startsWith('http')).map(file => file.preview);
 
-      // Upload images
-      const imageUploadResponse = await axios.post(
-        'https://migho-backend.onrender.com/v1/api/products/upload-image',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      // Upload new images if any
+      const newFiles = files.filter(file => !file.preview.startsWith('http'));
+      if (newFiles.length > 0) {
+        const formData = new FormData();
+        newFiles.forEach((file) => {
+          formData.append('image', file);
+        });
 
-      const imageUrls = imageUploadResponse.data.data.images;
+        const imageUploadResponse = await axios.post(
+          'https://migho-backend.onrender.com/v1/api/products/upload-image',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+
+        imageUrls = [...imageUrls, ...imageUploadResponse.data.data.images];
+      }
 
       // Prepare product data
       const productData = {
         name: productName,
         description: productDescription,
-        category,
-        price: 1000,
+        category: productCategory,
+        price: parseFloat(productPrice),
         image: imageUrls,
       };
 
-      // Add product
-      await axios.post(
-        'https://migho-backend.onrender.com/v1/api/products',
+      // Update product
+      await axios.put(
+        `https://migho-backend.onrender.com/v1/api/products/${productId}`,
         productData,
         {
           headers: {
@@ -90,26 +121,11 @@ const AddProductForm = () => {
         }
       );
 
-      Swal.fire({
-        title: 'Success!',
-        text: 'Product has been added successfully',
-        icon: 'success',
-        confirmButtonText: 'Ok'
-      })
-
-      // Reset form fields after submission
-      resetForm();
+      alert('Product updated successfully!');
+      navigate('/dashboard');
     } catch (error) {
       handleError(error);
     }
-  };
-
-  // Reset form fields
-  const resetForm = () => {
-    setProductName('');
-    setProductDescription('');
-    setFiles([]);
-    setUploading(false);
   };
 
   // Handle error
@@ -119,7 +135,7 @@ const AddProductForm = () => {
 
     if (error.response) {
       console.error('Error response:', error.response.data);
-      setError(`Upload failed: ${error.response.data.message || 'Unknown error'}`);
+      setError(`Update failed: ${error.response.data.message || 'Unknown error'}`);
     } else if (error.request) {
       console.error('No response received:', error.request);
       setError('No response from the server. Please try again.');
@@ -133,7 +149,7 @@ const AddProductForm = () => {
     <div className="bg-very-dark-grey md:py-[100px]">
       <form onSubmit={handleSubmit} className="p-[30px] md:w-[600px] md:mx-auto bg-white rounded-[15px]">
         <h1 className="text-2xl mb-4 text-custom-orange font-bold">
-          {capitalizeFirstLetter(category)}
+          Update {capitalizeFirstLetter(productCategory)} Product
         </h1>
 
         {/* Product Name Input */}
@@ -165,6 +181,21 @@ const AddProductForm = () => {
           />
         </div>
 
+        {/* Product Price Input */}
+        <div className="form-group mb-4">
+          <label htmlFor="product-price" className="block mb-2 text-[13px] text-custom-grey uppercase">
+            Product Price
+          </label>
+          <input
+            id="product-price"
+            type="number"
+            placeholder="Product price"
+            className="w-full border border-gray-300 px-[15px] py-[5px] rounded-[25px] placeholder:text-[12px]"
+            value={productPrice}
+            onChange={(e) => setProductPrice(e.target.value)}
+          />
+        </div>
+
         <div className="md:flex md:items-end md:justify-between">
           {/* Drag-and-Drop Area */}
           <div
@@ -186,7 +217,7 @@ const AddProductForm = () => {
             className="mt-4 bg-custom-orange text-white py-[5px] px-[25px] uppercase rounded-[25px]"
             disabled={uploading}
           >
-            {uploading ? 'Uploading...' : 'Add'}
+            {uploading ? 'Updating...' : 'Update'}
           </button>
         </div>
 
@@ -201,7 +232,11 @@ const AddProductForm = () => {
                 src={file.preview}
                 alt={file.name}
                 className="object-cover w-full h-full"
-                onLoad={() => URL.revokeObjectURL(file.preview)}
+                onLoad={() => {
+                  if (!file.preview.startsWith('http')) {
+                    URL.revokeObjectURL(file.preview);
+                  }
+                }}
               />
             </div>
           ))}
@@ -211,15 +246,4 @@ const AddProductForm = () => {
   );
 };
 
-export default AddProductForm;
-
-
-
-
-
-
-
-
-
-
-
+export default UpdateProductForm;

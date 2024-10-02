@@ -7,7 +7,7 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
         className={`font-bold w-fit text-[15px] ${activeSection === 1 ? 'bg-custom-orange text-white px-[20px] py-[5px] rounded-[15px] transition-all duration-300 ease-in-out' : 'text-custom-orange bg-transparent'}`}
         onClick={() => setActiveSection(1)}
       >
-        Manage Products
+        View Products
       </button>
       <button
         className={`font-bold w-fit text-[15px] ${activeSection === 2 ? 'bg-custom-orange text-white px-[20px] py-[5px] rounded-[15px] transition-all duration-300 ease-in-out' : 'text-custom-orange bg-transparent'}`}

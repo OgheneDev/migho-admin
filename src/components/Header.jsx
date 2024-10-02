@@ -1,14 +1,21 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import logo from '../assets/images/logo.svg'
 import searchIcon from '../assets/images/search.svg'
 
-const Header = ({ isVisible, toggleVisibility, searchQuery, setSearchQuery, handleSearchSubmit }) => {
+const Header = ({ isVisible, toggleVisibility, searchQuery, setSearchQuery, handleSearchSubmit, selectedOption,handleSelectChange  }) => {
   return (
     <header className="p-5 font-sans border-very-dark-grey border-b-[1px]">
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
           <img src={logo} alt="Logo" className="w-9" />
+          <div className='flex'>
           <h1 className="text-lg font-bold text-custom-orange">Admin Dashboard</h1>
+          <select value={selectedOption} onChange={handleSelectChange}>
+            <option value="/dashboard">Home</option>
+            <option value="/settings">Settings</option>
+          </select>
+          </div>
         </div>
 
         <button className="md:hidden" onClick={toggleVisibility}>
