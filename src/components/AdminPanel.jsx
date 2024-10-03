@@ -48,7 +48,7 @@ const AdminPanel = ({
 
       <div className="content-container md:p-5 border-very-dark-grey border-l-[1px] max-w-screen-xl mx-auto w-full">
         {isDropdownVisible && (
-          <div className='dropdown bg-white p-[20px] w-fit ml-auto'>
+          <div className='dropdown bg-white p-[20px] w-fit md:ml-auto ml-0 mx-auto'>
             <ul className='flex flex-col gap-[10px]'>
               <li className='text-custom-grey hover:text-custom-orange cursor-pointer' onClick={() => handleDropdownClick('agriculture')}>AGRICULTURE</li>
               <li className='text-custom-grey hover:text-custom-orange cursor-pointer' onClick={() => handleDropdownClick('transportation')}>TRANSPORTATION</li>
@@ -58,7 +58,7 @@ const AdminPanel = ({
         )}
 
         {isCategoryVisible && (
-          <div className="category-dropdown bg-white p-[20px] w-fit ml-[70%]">
+          <div className="category-dropdown bg-white p-[20px] w-fit md:ml-[70%] ml-0">
             <ul className='flex flex-col gap-[10px]'>
               {categories.map((category) => (
                 <li

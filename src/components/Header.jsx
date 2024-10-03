@@ -35,7 +35,7 @@ const Header = ({ isVisible, toggleVisibility, searchQuery, setSearchQuery, hand
       </div>
 
       {isVisible && (
-        <form className="mt-5 flex bg-very-light-blue px-5 py-3 rounded-lg md:hidden" onSubmit={handleSearchSubmit}>
+        <form className="mt-5 flex bg-very-light-blue px-5 py-3 rounded-lg md:hidden w-[250px] mx-auto" onSubmit={handleSearchSubmit}>
           <input
             type="text"
             placeholder="Search"
