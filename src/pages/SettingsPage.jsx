@@ -56,6 +56,22 @@ const SettingsPage = () => {
     }
   };
 
+  const LoadingSkeleton = () => (
+    <div className="animate-pulse">
+      <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+      <div className="space-y-2">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className="flex items-center space-x-4">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-16"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="p-4 bg-white shadow-md">
@@ -78,7 +94,9 @@ const SettingsPage = () => {
           </div>
         )}
         {isLoading ? (
-          <div className="text-center">Loading...</div>
+          <div className="p-4">
+              <LoadingSkeleton />
+            </div>
         ) : (
           <div className="overflow-x-auto bg-white rounded-lg shadow">
             {users.length > 0 ? (
