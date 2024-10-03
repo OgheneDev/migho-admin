@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import settings from '../assets/images/settings.svg'
 import logo from '../assets/images/logo.svg'
 import searchIcon from '../assets/images/search.svg'
 
@@ -8,13 +9,10 @@ const Header = ({ isVisible, toggleVisibility, searchQuery, setSearchQuery, hand
     <header className="p-5 font-sans border-very-dark-grey border-b-[1px]">
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
-          <img src={logo} alt="Logo" className="w-9" />
-          <div className='flex'>
-          <h1 className="text-lg font-bold text-custom-orange">Admin Dashboard</h1>
-          <select value={selectedOption} onChange={handleSelectChange}>
-            <option value="/dashboard">Home</option>
-            <option value="/settings">Settings</option>
-          </select>
+          <Link to='/dashboard'><img src={logo} alt="Logo" className="w-9" /></Link>
+          <div className='flex gap-[10px]'>
+          <h1 className="text-lg font-bold text-custom-orange">Admin Dashboard/</h1>
+          <Link to='/settings'><button><img src={settings} alt="" /></button></Link>
           </div>
         </div>
 

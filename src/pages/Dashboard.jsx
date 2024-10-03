@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import AdminPanel from '../components/AdminPanel'
+import AdminPanel from '../components/AdminPanel';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [activeCategory, setActiveCategory] = useState('agriculture');
-  const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
     fetchAllProducts();
@@ -66,12 +65,33 @@ const Dashboard = () => {
     .catch(err => console.error('Error fetching filtered products:', err));
   };
 
-  const fetchContacts = () => {
-    axios.get('https://migho-backend.onrender.com/v1/api/quotes', {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
-    })
-    .then(response => setContacts(response.data.data.results || []))
-    .catch(err => console.error('Error fetching contacts:', err));
+  const fetchContacts = async () => {
+    let allContacts = [];
+    let page = 1;
+    const limit = 10; // This is the limit set by the API
+  
+    try {
+      while (true) {
+        const response = await axios.get('https://migho-backend.onrender.com/v1/api/quotes', {
+          headers: { Authorization: `Bearer ${getAuthToken()}` },
+          params: { page, limit }
+        });
+  
+        const newContacts = response.data.data.results || [];
+        allContacts = [...allContacts, ...newContacts];
+  
+        // If we received fewer contacts than the limit, we've reached the end
+        if (newContacts.length < limit) {
+          break;
+        }
+  
+        page++;
+      }
+  
+      setContacts(allContacts);
+    } catch (err) {
+      console.error('Error fetching contacts:', err);
+    }
   };
 
   const handleSearchSubmit = (e) => {
@@ -93,7 +113,6 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${getAuthToken()}` },
       });
       
-      // Remove the product from the state
       setProducts(prevProducts => prevProducts.filter(product => product._id !== productId));
       setFilteredProducts(prevFiltered => prevFiltered.filter(product => product._id !== productId));
       
@@ -102,7 +121,7 @@ const Dashboard = () => {
         text: 'Product deleted successfully',
         icon: 'success',
         confirmButtonText: 'Ok'
-      })
+      });
     } catch (error) {
       console.error('Error deleting product:', error);
       Swal.fire({
@@ -110,7 +129,32 @@ const Dashboard = () => {
         text: 'Failed to delete product. Try again later!',
         icon: 'error',
         confirmButtonText: 'Ok'
-      })
+      });
+    }
+  };
+
+  const deleteContact = async (contactId) => {
+    try {
+      await axios.delete(`https://migho-backend.onrender.com/v1/api/quotes/${contactId}`, {
+        headers: { Authorization: `Bearer ${getAuthToken()}` },
+      });
+      
+      setContacts(prevContacts => prevContacts.filter(contact => contact._id !== contactId));
+      
+      Swal.fire({
+        title: 'Success!',
+        text: 'Contact deleted successfully',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to delete contact. Try again later!',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
     }
   };
 
@@ -124,7 +168,6 @@ const Dashboard = () => {
         }
       );
 
-      // Update the product in the state
       setProducts(prevProducts =>
         prevProducts.map(product =>
           product._id === productId ? { ...product, ...response.data.data } : product
@@ -141,7 +184,7 @@ const Dashboard = () => {
         text: 'Product has been updated successfully',
         icon: 'success',
         confirmButtonText: 'Ok'
-      })
+      });
     } catch (error) {
       console.error('Error updating product:', error);
       Swal.fire({
@@ -149,7 +192,7 @@ const Dashboard = () => {
         text: 'Failed to update product. Please try again.',
         icon: 'error',
         confirmButtonText: 'Ok'
-      })
+      });
     }
   };
 
@@ -157,15 +200,6 @@ const Dashboard = () => {
     navigate(`/update-product/${productId}`);
   };
 
-  const handleSelectChange = (e) => {
-    const value = e.target.value;
-    setSelectedOption(value);
-
-    if (value) {
-      // Navigate to the selected link
-      navigate(value);
-    }
-  }
 
   return (
     <div>
@@ -175,8 +209,6 @@ const Dashboard = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         handleSearchSubmit={handleSearchSubmit}
-        selectedOption={selectedOption}
-        handleSelectChange={handleSelectChange}
       />
       <div className='md:flex md:px-5 gap-5'>
         <Sidebar
@@ -196,11 +228,12 @@ const Dashboard = () => {
           onDeleteProduct={deleteProduct}
           onUpdateProduct={updateProduct}
           onEditProduct={handleEditProduct}
+          onDeleteContact={deleteContact}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
 

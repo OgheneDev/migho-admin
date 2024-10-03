@@ -1,10 +1,9 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import ProductList from './ProductList'
-import ContactList from './ContactList'
-import filter from '../assets/images/filter.svg'
-import sort from '../assets/images/sort.svg'
-import add from '../assets/images/add.svg'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import ProductList from './ProductList';
+import ContactList from './ContactList';
+import filter from '../assets/images/filter.svg';
+import add from '../assets/images/add.svg';
 
 const AdminPanel = ({
   activeSection,
@@ -16,13 +15,16 @@ const AdminPanel = ({
   toggleCategoryVisibility,
   filterProductsByCategory,
   activeCategory,
-  onDeleteProduct
+  onDeleteProduct,
+  onUpdateProduct,
+  onEditProduct,
+  onDeleteContact
 }) => {
   const navigate = useNavigate();
 
   const handleDropdownClick = (category) => {
-    navigate(`/add-product/${category}`)
-  }
+    navigate(`/add-product/${category}`);
+  };
 
   const categories = ['agriculture', 'transportation', 'real_estate'];
 
@@ -30,7 +32,7 @@ const AdminPanel = ({
     <div className="flex flex-col w-full">
       <div className="sort-container w-full bg-white md:bg-very-dark-grey">
         <div className="sort flex justify-between p-6 md:py-[15px] items-center max-w-screen-xl mx-auto w-full">
-          <p className="text-custom-orange">5 Bedroom duplex</p>
+          <p className="text-custom-orange">Admin Panel</p>
           <div className="flex gap-3">
             <button onClick={toggleCategoryVisibility} className="flex items-center gap-2 p-2">
               <img src={filter} alt="Filter icon" className="w-5" />
@@ -73,20 +75,25 @@ const AdminPanel = ({
 
         <div className="container">
           {activeSection === 1 ? (
-            <ProductList 
-             products={products}
-            onDeleteProduct={onDeleteProduct}
+            <ProductList
+              products={products}
+              onDeleteProduct={onDeleteProduct}
+              onUpdateProduct={onUpdateProduct}
+              onEditProduct={onEditProduct}
             />
           ) : (
-            <ContactList contacts={contacts} />
+            <ContactList 
+              contacts={contacts} 
+              onDeleteContact={onDeleteContact} 
+            />
           )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminPanel
+export default AdminPanel;
 
 
 

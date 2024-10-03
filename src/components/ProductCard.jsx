@@ -10,16 +10,16 @@ const ProductCard = ({ product, onDeleteProduct }) => {
   };
 
   return (
-    <div className="product bg-very-light-blue w-full p-4 rounded-lg">
+    <div className="product bg-very-light-blue w-[80%] mx-auto md:mx-0 md:w-full p-4 rounded-lg">
       <img
         src={product.image[0]}
         alt={product.name}
         className="w-full h-[150px] object-cover rounded-lg mb-3"
       />
-      <div className="flex justify-between mb-3">
+      <div className="flex justify-between mb-5 md:mb-3">
         <p className="text-custom-orange font-bold text-sm">{product.name}</p>
         <button onClick={onDeleteProduct}>
-          <img src={bin} alt="Delete" className="w-3 h-3" />
+          <img src={bin} alt="Delete" className="md:w-3 md:h-3" />
         </button>
       </div>
       <button 
