@@ -86,7 +86,7 @@ const SettingsPage = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email/Username</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Role</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -96,11 +96,13 @@ const SettingsPage = () => {
                     <tr key={user._id}>
                       <td className="px-4 py-2 whitespace-nowrap">{user.email}</td>
                       <td className="px-4 py-2 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                           {user.role}
                         </span>
                       </td>
-                      <td className="px-4 py-2 whitespace-nowrap">{new Date(user.updatedAt).toLocaleString()}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                         {user.last_login}
+                        </td>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <button
                           onClick={() => handleDelete(user._id)}
