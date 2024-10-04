@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const SignUpPage = () => {
@@ -7,6 +7,8 @@ const SignUpPage = () => {
    const [name, setName] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
+   const navigate = useNavigate();
+
 
    const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +21,7 @@ const SignUpPage = () => {
       });
       
       const response = await axios.post('https://migho-backend.onrender.com/v1/api/admin/users', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
         name: name, 
         email: email,
         password: password,
@@ -28,6 +31,8 @@ const SignUpPage = () => {
     } catch (error) {
       console.log(error.response.data)
     }
+
+    navigate(-1)
    }
 
   return (
@@ -40,11 +45,6 @@ const SignUpPage = () => {
             your admin details.
           </p>
         </article>
-        <Link to="/sign-in">
-          <button className="btn-sign mt-4 text-white rounded-full border-2 border-white uppercase  w-full md:w-fit px-10 py-2 mx-auto">
-            Sign In
-          </button>
-        </Link>
       </div>
 
       <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-12 flex flex-col justify-center h-auto md:h-screen text-center">

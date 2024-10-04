@@ -87,7 +87,10 @@ const SettingsPage = () => {
       </header>
 
       <main className="max-w-6xl mx-auto mt-8 p-4">
+        <div className='flex justify-between'>
         <h2 className="text-2xl font-bold mb-4">Access Control</h2>
+        <Link to='/register' className='text-custom-orange'>Create an account</Link>
+        </div>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
             <span className="block sm:inline">{error}</span>

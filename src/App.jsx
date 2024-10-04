@@ -6,6 +6,7 @@ import AddProductForm from './pages/AddProductForm'
 import UpdateProductForm from './pages/updateProductForm'
 import SettingsPage from './pages/SettingsPage'
 import ViewContactDetails from './pages/ViewContactDetails'
+import SignUpPage from './pages/SignUpPage'
 
 const App = () => {
 
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/update-product/:productId" element={<UpdateProductForm />} />
         <Route path='/settings' element={<SettingsPage />} />
         <Route path="/contact-details/:contactId" element={<ViewContactDetails />} />
+        <Route path='/register' element={<SignUpPage />} />
       </>
     )
   )
