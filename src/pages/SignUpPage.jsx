@@ -1,17 +1,20 @@
 import React,{useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
 
 const SignUpPage = () => {
 
    const [name, setName] = useState('');
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
+   const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
 
    const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       console.log({
         name,
@@ -28,11 +31,11 @@ const SignUpPage = () => {
         role: 'admin'  
       })
       console.log(response.data)
+      navigate(-1)
     } catch (error) {
       console.log(error.response.data)
     }
-
-    navigate(-1)
+    setLoading(false);
    }
 
   return (
@@ -75,7 +78,7 @@ const SignUpPage = () => {
         </div>
 
         <button type='submit' className="btn-sign mt-5 bg-custom-orange font-sans w-full md:w-fit mx-auto px-10 py-3 rounded-full text-white uppercase ">
-          Sign Up
+        {loading ? <ClipLoader size={20} color='fff' /> : 'Sign Up'}
         </button>
       </form>
     </div>
