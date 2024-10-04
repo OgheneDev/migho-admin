@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import trash from '../assets/images/bin.svg';
 import settings from '../assets/images/settings.svg'
@@ -8,9 +8,14 @@ const SettingsPage = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const getAuthToken = () => {
     return localStorage.getItem('authToken');
+  };
+
+  const getRefreshToken = () => {
+    return localStorage.getItem('refreshToken');
   };
 
   useEffect(() => {
@@ -56,6 +61,28 @@ const SettingsPage = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const response = await axios.post('https://migho-backend.onrender.com/v1/api/admin/auth/logout', {
+        refreshToken: getRefreshToken()
+      }, {
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
+      });
+
+      if (response.status === 200) {
+        // Clear local storage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+
+        // Navigate to sign-in page
+        navigate('/');
+      }
+    } catch (err) {
+      setError('Failed to logout: ' + (err.response?.data?.message || err.message));
+      console.error('Error logging out:', err);
+    }
+  };
+
   const LoadingSkeleton = () => (
     <div className="animate-pulse">
       <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -80,9 +107,12 @@ const SettingsPage = () => {
             <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
             <span className="text-xl font-bold text-custom-orange">Admin Dashboard</span>
           </Link>
+          <div className='flex gap-[15px]'>
           <Link to="/settings">
             <img src={settings} alt="Settings" className="w-6 h-6" />
           </Link>
+          <button className="text-custom-orange" onClick={handleLogout}>Logout</button>
+          </div>
         </div>
       </header>
 

@@ -1,42 +1,41 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 
 const SignUpPage = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-   const [name, setName] = useState('');
-   const [email, setEmail] = useState('');
-   const [password, setPassword] = useState('');
-   const [loading, setLoading] = useState(false);
-   const navigate = useNavigate();
-
-
-   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
-      console.log({
-        name,
-        email,
-        password,
-        role: 'admin'
-      });
-      
-      const response = await axios.post('https://migho-backend.onrender.com/v1/api/admin/users', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-        name: name, 
-        email: email,
-        password: password,
-        role: 'admin'  
-      })
-      console.log(response.data)
-      navigate(-1)
+      const response = await axios.post(
+        'https://migho-backend.onrender.com/v1/api/admin/users',
+        {
+          name,
+          email,
+          password,
+          role: 'coadmin'
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` }
+        }
+      );
+      console.log(response.data);
+      navigate(-1);
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error.response?.data || error.message);
+      setError(error.response?.data?.message || 'An error occurred. Please try again.');
     }
     setLoading(false);
-   }
+  };
 
   return (
     <div className="form-container flex flex-col md:flex-row w-full">
@@ -49,36 +48,43 @@ const SignUpPage = () => {
           </p>
         </article>
       </div>
-
+      
       <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-12 flex flex-col justify-center h-auto md:h-screen text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-7">Create Account</h1>
         <p className="text-base md:text-lg text-custom-grey mb-5">Use your email for registration</p>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <div className="inputs mt-4">
-          <input
-           type="text"
+          <input 
+            type="text"
             placeholder="Username"
             name='username'
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey " />
+            className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey"
+            required
+          />
           <input 
-           type="email"
-           placeholder="Email"
-           value={email}
-           name='email'
-           onChange={(e) => setEmail(e.target.value)}
-           className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey"  />
-          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            name='email'
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey"
+            required
+          />
+          <input 
             type="password"
             placeholder="Password"
             value={password}
             name='password'
             onChange={(e) => setPassword(e.target.value)}
-             className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey" />
+            className="w-full p-4 md:p-5 mb-4 border border-gray-300 rounded bg-custom-ash placeholder:text-custom-grey"
+            required
+          />
         </div>
-
-        <button type='submit' className="btn-sign mt-5 bg-custom-orange font-sans w-full md:w-fit mx-auto px-10 py-3 rounded-full text-white uppercase ">
-        {loading ? <ClipLoader size={20} color='fff' /> : 'Sign Up'}
+        
+        <button type='submit' className="btn-sign mt-5 bg-custom-orange font-sans w-full md:w-fit mx-auto px-10 py-3 rounded-full text-white uppercase" disabled={loading}>
+          {loading ? <ClipLoader size={20} color='#fff' /> : 'Sign Up'}
         </button>
       </form>
     </div>
